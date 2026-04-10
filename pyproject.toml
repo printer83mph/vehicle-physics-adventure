@@ -1,0 +1,19 @@
+[project]
+name = "vehicle-sim-adventure"
+version = "0.1.0"
+description = "A real-time physically based vehicle simulator"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.4.4",
+    "raylib==5.5.0.3",
+]
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.39.0",
+    "jurigged>=0.6.1",
+]
+
+[tool.basedpyright]
+typeCheckingMode = "standard"
