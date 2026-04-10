@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  static-analysis-backend:
+  static-analysis:
     runs-on: ubuntu-latest
 
     steps:
