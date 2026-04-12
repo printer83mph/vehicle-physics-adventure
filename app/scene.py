@@ -9,9 +9,16 @@ class Scene:
     def __init__(self):
         self.entities.append(
             NaiveVehicle(
-                size=(20, 40),
+                size=(40, 20),
                 wheels=[
-                    # NaiveVehicle.Wheel(position=)
+                    NaiveVehicle.Wheel(
+                        position=(15, 10), acceleration_factor=0.0, turns=True
+                    ),
+                    NaiveVehicle.Wheel(
+                        position=(15, -10), acceleration_factor=0.0, turns=True
+                    ),
+                    NaiveVehicle.Wheel(position=(-15, 10), acceleration_factor=1.0),
+                    NaiveVehicle.Wheel(position=(-15, -10), acceleration_factor=1.0),
                 ],
             )
         )

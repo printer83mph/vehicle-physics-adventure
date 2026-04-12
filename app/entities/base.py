@@ -32,7 +32,7 @@ class BaseEntity:
         pos: tuple[float, float] = (0, 0),
         rotation: float = 0,
     ):
-        self.position = np.array(pos)
+        self.position = np.array(pos, float)
         self.rotation = rotation
 
     def tick(self, bundle: EntityTickBundle) -> None:
@@ -48,10 +48,10 @@ class BaseEntity:
     def rl_transform_local(self) -> Generator[None]:
         """Temporarily push local transform matrices to the stack, including translation and rotation."""
 
+        rl.rl_push_matrix()
         rl.rl_translatef(self.position[0], self.position[1], 0)
         rl.rl_rotatef(np.rad2deg(self.rotation), 0, 0, 1)
         try:
             yield None
         finally:
-            rl.rl_pop_matrix()
             rl.rl_pop_matrix()
