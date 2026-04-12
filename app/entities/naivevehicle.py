@@ -3,7 +3,7 @@ from typing import Iterable, override
 
 import numpy as np
 import pyray as rl
-from pyray import BLACK, RED
+from pyray import BLACK, BLUE, GREEN, RED
 from raylib import KEY_A, KEY_D, KEY_S, KEY_SPACE, KEY_W
 
 from app.entities.base import BaseEntity, EntityTickBundle
@@ -31,16 +31,17 @@ class NaiveVehicle(BaseEntity):
     velocity: np.typing.NDArray[np.float64] = np.array([0.0, 0.0], np.float64)
     angular_velocity: float = 0.0
 
-    damping: float = 0.8
+    damping: float = 0.9
     brake_damping: float = 0.15
-    angular_damping: float = 0.3
+    angular_damping: float = 0.6
 
-    turn_speed = 200.0
-    acceleration = 200
+    turn_speed = 2.0
+    acceleration = 150
     turn_ratio = 0.012
 
     wheels: list[Wheel]
 
+    sliding: bool = False
     body: rl.Rectangle
 
     def __init__(self, *, size: tuple[float, float], wheels: Iterable[Wheel]):
@@ -57,42 +58,52 @@ class NaiveVehicle(BaseEntity):
     def tick(self, bundle: EntityTickBundle) -> None:
 
         forward = self._get_forward_vector()
+        steering_forward = self._get_steering_forward_vector()
 
         handbraking = rl.is_key_down(KEY_SPACE)
+        side_speed = np.linalg.norm(np.cross(self.velocity, steering_forward))
 
-        if not handbraking:
-            # add forward/backwards velocity
-            if rl.is_key_down(KEY_W):
-                self.velocity += forward * self.acceleration * bundle.dt
-            if rl.is_key_down(KEY_S):
-                self.velocity -= forward * self.acceleration * bundle.dt
+        if self.sliding and abs(side_speed) < 45.0:
+            self.sliding = False
+        elif not self.sliding and abs(side_speed) > 85.0:
+            self.sliding = True
 
-        # project to only forward velocity
+        if handbraking:
+            self.sliding = True
+
+        # add forward/backwards velocity
+        if rl.is_key_down(KEY_W):
+            self.velocity += forward * self.acceleration * bundle.dt
+        if rl.is_key_down(KEY_S):
+            self.velocity -= forward * self.acceleration * bundle.dt
+
         forward_speed = np.dot(self.velocity, forward)
-        self.velocity = forward_speed * forward
+        if not self.sliding:
+            # static friction: project to only forward velocity
+            self.velocity = forward_speed * forward
 
         if rl.is_key_down(KEY_A):
             self.turn_amount = max(
                 -1,
-                self.turn_amount
-                - self.turn_speed * bundle.dt / (np.abs(forward_speed) + 1),
+                self.turn_amount - self.turn_speed * bundle.dt,
             )
         elif rl.is_key_down(KEY_D):
             self.turn_amount = min(
                 1,
-                self.turn_amount
-                + self.turn_speed * bundle.dt / (np.abs(forward_speed) + 1),
+                self.turn_amount + self.turn_speed * bundle.dt,
             )
         else:
             self.turn_amount *= np.pow(0.01, bundle.dt)
 
-        if not handbraking:
-            # rotate car based on "turn amount"
-            self.angular_velocity = self.turn_amount * self.turn_ratio * forward_speed
-            self.rotation += self.angular_velocity * bundle.dt
+        # rotate car based on "turn amount"
+        turn_factor = 0.4 if self.sliding else 1.0
+        self.angular_velocity = (
+            self.turn_amount * self.turn_ratio * forward_speed * turn_factor
+        )
+        self.rotation += self.angular_velocity * bundle.dt
 
         # do damping
-        damping = self.brake_damping if handbraking else self.damping
+        damping = self.brake_damping if self.sliding else self.damping
         self.velocity *= np.pow(damping, bundle.dt)
         self.angular_velocity *= np.pow(self.angular_damping, bundle.dt)
 
@@ -105,11 +116,17 @@ class NaiveVehicle(BaseEntity):
     def _get_forward_vector(self):
         return np.array([np.cos(self.rotation), np.sin(self.rotation)], np.float64)
 
+    def _get_steering_forward_vector(self):
+        rotation = self.rotation + self.turn_amount * np.pi / 8
+        return np.array([np.cos(rotation), np.sin(rotation)], np.float64)
+
+    _steer_line_start_pos = rl.Vector2()
+    _steer_line_end_pos = rl.Vector2()
+
     @override
     def draw(self) -> None:
         with self.rl_transform_local():
-            rl.rl_translatef(self.size[1] / 2, 0, 0)
-            rl.draw_rectangle_rec(self.body, RED)
+            rl.draw_rectangle_rec(self.body, BLUE if self.sliding else RED)
 
             for wheel in self.wheels:
                 rl.rl_push_matrix()
@@ -124,4 +141,18 @@ class NaiveVehicle(BaseEntity):
                     int(wheel.size[1]),
                     BLACK,
                 )
+
                 rl.rl_pop_matrix()
+
+        steering_vector = self._get_steering_forward_vector() * 40
+
+        self._steer_line_start_pos.x = self.position[0]
+        self._steer_line_start_pos.y = self.position[1]
+        self._steer_line_end_pos.x = self.position[0] + steering_vector[0]
+        self._steer_line_end_pos.y = self.position[1] + steering_vector[1]
+        rl.draw_line_ex(
+            self._steer_line_start_pos,
+            self._steer_line_end_pos,
+            2.0,
+            GREEN,
+        )
