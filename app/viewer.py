@@ -25,6 +25,7 @@ class Viewer:
 
     def _tick(self):
         dt = pyray.get_frame_time()
+        dt = min(dt, 0.066667)  # prevent large timesteps
         self.scene.tick(dt)
 
     def _draw(self):
