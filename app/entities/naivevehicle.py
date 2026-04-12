@@ -32,7 +32,7 @@ class NaiveVehicle(BaseEntity):
     angular_velocity: float = 0.0
 
     damping: float = 0.9
-    brake_damping: float = 0.15
+    brake_damping: float = 0.25
     angular_damping: float = 0.6
 
     turn_speed = 2.0
@@ -96,7 +96,7 @@ class NaiveVehicle(BaseEntity):
             self.turn_amount *= np.pow(0.01, bundle.dt)
 
         # rotate car based on "turn amount"
-        turn_factor = 0.4 if self.sliding else 1.0
+        turn_factor = 0.7 if self.sliding else 1.0
         self.angular_velocity = (
             self.turn_amount * self.turn_ratio * forward_speed * turn_factor
         )
