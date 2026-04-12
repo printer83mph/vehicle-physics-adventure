@@ -1,5 +1,5 @@
 from app.entities.base import BaseEntity, EntityTickBundle
-from app.entities.vehicle import Vehicle
+from app.entities.naivevehicle import NaiveVehicle
 
 
 class Scene:
@@ -7,7 +7,21 @@ class Scene:
     elapsed_time: float = 0
 
     def __init__(self):
-        self.entities.append(Vehicle())
+        self.entities.append(
+            NaiveVehicle(
+                size=(40, 20),
+                wheels=[
+                    NaiveVehicle.Wheel(
+                        position=(15, 10), acceleration_factor=0.0, turns=True
+                    ),
+                    NaiveVehicle.Wheel(
+                        position=(15, -10), acceleration_factor=0.0, turns=True
+                    ),
+                    NaiveVehicle.Wheel(position=(-15, 10), acceleration_factor=1.0),
+                    NaiveVehicle.Wheel(position=(-15, -10), acceleration_factor=1.0),
+                ],
+            )
+        )
 
     def tick(self, dt: float):
         # Bundle of scene/tick info to send to all entities
