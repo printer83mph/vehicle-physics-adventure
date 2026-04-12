@@ -7,7 +7,7 @@ class Scene:
     elapsed_time: float = 0
 
     def __init__(self):
-        self.entities.append(Vehicle(0, 0))
+        self.entities.append(Vehicle())
 
     def tick(self, dt: float):
         # Bundle of scene/tick info to send to all entities
