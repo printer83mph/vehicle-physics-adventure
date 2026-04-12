@@ -4,7 +4,7 @@ from typing import Iterable, override
 import numpy as np
 import pyray as rl
 from pyray import BLACK, RED
-from raylib import KEY_A, KEY_D, KEY_S, KEY_W
+from raylib import KEY_A, KEY_D, KEY_S, KEY_SPACE, KEY_W
 
 from app.entities.base import BaseEntity, EntityTickBundle
 
@@ -30,12 +30,14 @@ class NaiveVehicle(BaseEntity):
 
     velocity: np.typing.NDArray[np.float64] = np.array([0.0, 0.0], np.float64)
     angular_velocity: float = 0.0
-    damping: float = 0.1
-    angular_damping: float = 0.1
 
-    turn_speed = 2.0
-    acceleration = 400
-    turn_ratio = 0.015
+    damping: float = 0.8
+    brake_damping: float = 0.15
+    angular_damping: float = 0.3
+
+    turn_speed = 200.0
+    acceleration = 200
+    turn_ratio = 0.012
 
     wheels: list[Wheel]
 
@@ -56,27 +58,42 @@ class NaiveVehicle(BaseEntity):
 
         forward = self._get_forward_vector()
 
-        # add forward/backwards velocity
-        if rl.is_key_down(KEY_W):
-            self.velocity += forward * self.acceleration * bundle.dt
-        if rl.is_key_down(KEY_S):
-            self.velocity -= forward * self.acceleration * bundle.dt
+        handbraking = rl.is_key_down(KEY_SPACE)
+
+        if not handbraking:
+            # add forward/backwards velocity
+            if rl.is_key_down(KEY_W):
+                self.velocity += forward * self.acceleration * bundle.dt
+            if rl.is_key_down(KEY_S):
+                self.velocity -= forward * self.acceleration * bundle.dt
 
         # project to only forward velocity
         forward_speed = np.dot(self.velocity, forward)
         self.velocity = forward_speed * forward
 
         if rl.is_key_down(KEY_A):
-            self.turn_amount = max(-1, self.turn_amount - self.turn_speed * bundle.dt)
+            self.turn_amount = max(
+                -1,
+                self.turn_amount
+                - self.turn_speed * bundle.dt / (np.abs(forward_speed) + 1),
+            )
         elif rl.is_key_down(KEY_D):
-            self.turn_amount = min(1, self.turn_amount + self.turn_speed * bundle.dt)
+            self.turn_amount = min(
+                1,
+                self.turn_amount
+                + self.turn_speed * bundle.dt / (np.abs(forward_speed) + 1),
+            )
         else:
             self.turn_amount *= np.pow(0.01, bundle.dt)
 
-        self.rotation += self.turn_amount * self.turn_ratio * forward_speed * bundle.dt
+        if not handbraking:
+            # rotate car based on "turn amount"
+            self.angular_velocity = self.turn_amount * self.turn_ratio * forward_speed
+            self.rotation += self.angular_velocity * bundle.dt
 
         # do damping
-        self.velocity *= np.pow(self.damping, bundle.dt)
+        damping = self.brake_damping if handbraking else self.damping
+        self.velocity *= np.pow(damping, bundle.dt)
         self.angular_velocity *= np.pow(self.angular_damping, bundle.dt)
 
         # integrate position/vel
