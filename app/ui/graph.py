@@ -10,7 +10,6 @@ from raylib.colors import LIGHTGRAY, WHITE
 class Graph:
     @dataclass
     class YSeries:
-        name: str | None
         color: rl.Color
         thickness: float
         values: NDArray[np.float64]
@@ -40,6 +39,9 @@ class Graph:
 
         self.x_series: NDArray[np.float64] = np.array([], np.float64)
         self.y_series_list: list[Graph.YSeries] = []
+
+    def add_series(self, series: YSeries):
+        self.y_series_list.append(series)
 
     def draw(self):
         """

@@ -16,29 +16,27 @@ def main():
     rl.set_target_fps(rl.get_monitor_refresh_rate(rl.get_current_monitor()))
 
     graph = Graph(
-        position=(50, 50),
+        position=(50, 50),  # position of top left corner
         size=(300, 300),
-        y_scale=3.0,
-        y_offset=-1.5,
-        line_spacing=(1.0, 1.0),
-        line_offset=(0.0, 0.0),
+        y_scale=3.0,  # span of y values
+        y_offset=-1.5,  # minimum y value shown
+        line_spacing=(1.0, 1.0),  # space between each background line
+        line_offset=(0.0, 0.0),  # base offset for background lines
     )
 
     # init y series
     y_series_sin = Graph.YSeries(
-        name="default",
         color=rl.RED,
         thickness=2,
         values=np.zeros(1, np.float64),
     )
     y_series_cos = Graph.YSeries(
-        name="default",
         color=rl.GREEN,
         thickness=2,
         values=np.zeros(1, np.float64),
     )
-    graph.y_series_list.append(y_series_sin)
-    graph.y_series_list.append(y_series_cos)
+    graph.add_series(y_series_sin)
+    graph.add_series(y_series_cos)
 
     def update_graph():
         time_offset = time.time()
@@ -49,10 +47,10 @@ def main():
         y_series_cos.values = np.cos(graph.x_series * np.pi * 0.5)
 
     while not rl.window_should_close():
+        update_graph()
+
         rl.begin_drawing()
         rl.clear_background(RAYWHITE)
-
-        update_graph()
 
         # test draw graph
         graph.draw()
