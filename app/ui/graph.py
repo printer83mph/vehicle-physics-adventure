@@ -26,6 +26,7 @@ class Graph:
         y_offset: float = 0.0,
         background_color: tuple[int, int, int, int] | None = WHITE,
         line_color: tuple[int, int, int, int] | None = LIGHTGRAY,
+        border_color: tuple[int, int, int, int] | None = LIGHTGRAY,
     ):
         self.position: tuple[int, int] = position
         self.size: tuple[int, int] = size
@@ -35,6 +36,7 @@ class Graph:
         self.y_offset = y_offset
         self.background_color = background_color
         self.line_color = line_color
+        self.border_color = border_color
 
         self.x_series: NDArray[np.float64] = np.array([], np.float64)
         self.y_series_list: list[Graph.YSeries] = []
@@ -53,6 +55,12 @@ class Graph:
         inv_rl_y_scale = 1.0 / self.y_scale
         x_pos, y_pos = self.position
         x_size, y_size = self.size
+
+        # draw border
+        if self.border_color is not None:
+            rl.draw_rectangle_lines(
+                x_pos, y_pos, x_size + 1, y_size + 1, self.border_color
+            )
 
         rl.begin_scissor_mode(x_pos, y_pos, x_pos + x_size, y_pos + y_size)
         rl.rl_push_matrix()
