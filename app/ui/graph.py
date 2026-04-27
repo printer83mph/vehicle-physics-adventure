@@ -21,8 +21,8 @@ class Graph:
         size: tuple[int, int] = (80, 80),
         line_spacing: tuple[float, float] = (5.0, 5.0),
         line_offset: tuple[float, float] = (0.0, 0.0),
-        y_scale: float = 25.0,
-        y_offset: float = 0.0,
+        y_min: float = -10.0,
+        y_max: float = 10.0,
         background_color: tuple[int, int, int, int] | None = WHITE,
         line_color: tuple[int, int, int, int] | None = LIGHTGRAY,
         border_color: tuple[int, int, int, int] | None = LIGHTGRAY,
@@ -31,8 +31,8 @@ class Graph:
         self.size: tuple[int, int] = size
         self.line_spacing: tuple[float, float] = line_spacing
         self.line_offset: tuple[float, float] = line_offset
-        self.y_scale = y_scale
-        self.y_offset = y_offset
+        self.y_min = y_min
+        self.y_max = y_max
         self.background_color = background_color
         self.line_color = line_color
         self.border_color = border_color
@@ -54,7 +54,7 @@ class Graph:
 
         x_min, x_max = np.min(self.x_series), np.max(self.x_series)
         inv_rl_x_scale = 1.0 / (x_max - x_min)
-        inv_rl_y_scale = 1.0 / self.y_scale
+        inv_rl_y_scale = 1.0 / (self.y_max - self.y_min)
         x_pos, y_pos = self.position
         x_size, y_size = self.size
 
@@ -91,17 +91,14 @@ class Graph:
             # draw vertical (y=k) lines
 
             # get initial line position
-            y_min = self.y_offset
-            y_max = self.y_offset + self.y_scale
-
             y_line = (
-                math.ceil((y_min - self.line_offset[1]) / self.line_spacing[1])
+                math.ceil((self.y_min - self.line_offset[1]) / self.line_spacing[1])
                 * self.line_spacing[1]
                 + self.line_offset[1]
             )
             # go up to end
-            while y_line < y_max:
-                line_pos = int((1 - (y_line - y_min) * inv_rl_y_scale) * y_size)
+            while y_line < self.y_max:
+                line_pos = int((1 - (y_line - self.y_min) * inv_rl_y_scale) * y_size)
                 rl.draw_line(0, line_pos, x_size, line_pos, self.line_color)
                 y_line += self.line_spacing[1]
 
@@ -120,7 +117,7 @@ class Graph:
                     continue
 
                 # invert because raylib y axis goes top to bottom
-                rl_y1_y2 = (1.0 - (y1_y2 - self.y_offset) * inv_rl_y_scale) * y_size
+                rl_y1_y2 = (1.0 - (y1_y2 - self.y_min) * inv_rl_y_scale) * y_size
 
                 # draw line from i to i+1
                 rl.draw_line_ex(

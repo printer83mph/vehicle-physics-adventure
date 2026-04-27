@@ -18,8 +18,8 @@ def main():
     graph = Graph(
         position=(50, 50),  # position of top left corner
         size=(300, 300),
-        y_scale=3.0,  # span of y values
-        y_offset=-1.5,  # minimum y value shown
+        y_min=-2.0,  # min y value shown
+        y_max=2.0,  # max y value shown
         line_spacing=(1.0, 1.0),  # space between each background line
         line_offset=(0.0, 0.0),  # base offset for background lines
     )
