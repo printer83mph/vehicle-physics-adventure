@@ -2,7 +2,7 @@ import time
 
 import numpy as np
 import pyray as rl
-from raylib.colors import LIGHTGRAY, RAYWHITE
+from raylib.colors import RAYWHITE, WHITE
 
 from app.ui.graph import Graph
 
@@ -20,7 +20,9 @@ def main():
         size=(300, 300),
         y_scale=3.0,
         y_offset=-1.5,
-        background_color=LIGHTGRAY,
+        line_spacing=(1.0, 1.0),
+        line_offset=(0.0, 0.0),
+        background_color=WHITE,
     )
 
     # init y series
@@ -35,9 +37,9 @@ def main():
     def update_graph():
         time_offset = time.time()
         graph.x_series = np.linspace(
-            time_offset, time_offset + 12.0, 50, dtype=np.float64
+            time_offset, time_offset + 12.0, 100, dtype=np.float64
         )
-        y_series_sin.values = np.sin(graph.x_series)
+        y_series_sin.values = np.sin(graph.x_series * np.pi * 0.5)
 
     while not rl.window_should_close():
         rl.begin_drawing()

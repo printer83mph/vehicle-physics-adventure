@@ -1,8 +1,10 @@
+import math
 from dataclasses import dataclass
 
 import numpy as np
 import pyray as rl
 from numpy.typing import NDArray
+from raylib.colors import LIGHTGRAY, WHITE
 
 
 class Graph:
@@ -22,7 +24,8 @@ class Graph:
         line_offset: tuple[float, float] = (0.0, 0.0),
         y_scale: float = 25.0,
         y_offset: float = 0.0,
-        background_color: tuple[int, int, int, int] | None = None,
+        background_color: tuple[int, int, int, int] | None = WHITE,
+        line_color: tuple[int, int, int, int] | None = LIGHTGRAY,
     ):
         self.position: tuple[int, int] = position
         self.size: tuple[int, int] = size
@@ -31,6 +34,8 @@ class Graph:
         self.y_scale = y_scale
         self.y_offset = y_offset
         self.background_color = background_color
+        self.line_color = line_color
+
         self.x_series: NDArray[np.float64] = np.array([], np.float64)
         self.y_series_list: list[Graph.YSeries] = []
 
@@ -53,11 +58,42 @@ class Graph:
         rl.rl_push_matrix()
         rl.rl_translatef(x_pos, y_pos, 0)
 
+        # draw background
         if self.background_color is not None:
             rl.draw_rectangle(0, 0, x_size, y_size, self.background_color)
 
         # draw background lines
-        # TODO
+        if self.line_color is not None:
+            # draw vertical (x=k) lines
+
+            # get initial line position
+            x_line = (
+                math.ceil((x_min - self.line_offset[0]) / self.line_spacing[0])
+                * self.line_spacing[0]
+                + self.line_offset[0]
+            )
+            # go up to end
+            while x_line < x_max:
+                line_pos = int((x_line - x_min) * inv_rl_x_scale * x_size)
+                rl.draw_line(line_pos, 0, line_pos, y_size, self.line_color)
+                x_line += self.line_spacing[0]
+
+            # draw vertical (y=k) lines
+
+            # get initial line position
+            y_min = self.y_offset
+            y_max = self.y_offset + self.y_scale
+
+            y_line = (
+                math.ceil((y_min - self.line_offset[1]) / self.line_spacing[1])
+                * self.line_spacing[1]
+                + self.line_offset[1]
+            )
+            # go up to end
+            while y_line < y_max:
+                line_pos = int((1 - (y_line - y_min) * inv_rl_y_scale) * y_size)
+                rl.draw_line(0, line_pos, x_size, line_pos, self.line_color)
+                y_line += self.line_spacing[1]
 
         # draw data series
         for i in range(len(self.x_series) - 1):
@@ -73,6 +109,7 @@ class Graph:
                     # if index out of bounds, don't draw this segment
                     continue
 
+                # invert because raylib y axis goes top to bottom
                 rl_y1_y2 = (1.0 - (y1_y2 - self.y_offset) * inv_rl_y_scale) * y_size
 
                 # draw line from i to i+1
