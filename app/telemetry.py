@@ -18,7 +18,7 @@ def pop_and_push(arr, value):
 
 
 class Telemetry:
-    SAMPLES = 200
+    SAMPLES = 400
 
     def __init__(self, car, SCREEN_WIDTH, SCREEN_HEIGHT):
         GRAPH_WIDTH = 200
@@ -26,10 +26,7 @@ class Telemetry:
 
         self.car = car
 
-        current_time = time.time()
-        self.time_series = np.linspace(
-            current_time - 1.0, current_time, Telemetry.SAMPLES
-        )
+        self.time_series = np.linspace(-1.0, 0.0, Telemetry.SAMPLES)
 
         # Speed creation
         speed_graph: Graph = Graph(
@@ -37,11 +34,12 @@ class Telemetry:
                 SCREEN_WIDTH - GRAPH_WIDTH,
                 0,
             ),  # position of top left corner
-            size=(200, 200),
+            size=(400, 200),
             y_min=-100.0,  # min y value shown
             y_max=500.0,  # max y value shown
             line_spacing=(1.0, 100.0),  # space between each background line
-            line_offset=(0.0, 0.0),  # base offset for background lines
+            line_offset=(0.0, 0.0),  # base offset for background lines,
+            title="Speed over Time",
         )
 
         # init y series
@@ -61,11 +59,12 @@ class Telemetry:
                 SCREEN_WIDTH - GRAPH_WIDTH,
                 GRAPH_HEIGHT,
             ),  # position of top left corner
-            size=(200, 200),
+            size=(400, 200),
             y_min=-5.0,  # min y value shown
             y_max=5.0,  # max y value shown
             line_spacing=(1.0, 1.0),  # space between each background line
-            line_offset=(0.0, 0.0),  # base offset for background lines
+            line_offset=(0.0, 0.0),  # base offset for background lines,
+            title="Angular Velocity over Time",
         )
 
         angular_series = Graph.YSeries(
@@ -86,11 +85,12 @@ class Telemetry:
                 SCREEN_WIDTH - GRAPH_WIDTH,
                 2 * GRAPH_HEIGHT,
             ),  # position of top left corner
-            size=(200, 200),
+            size=(400, 200),
             y_min=-400.0,  # min y value shown
             y_max=1600.0,  # max y value shown
-            line_spacing=(1.0, 100.0),  # space between each background line
-            line_offset=(0.0, 0.0),  # base offset for background lines
+            line_spacing=(1.0, 400.0),  # space between each background line
+            line_offset=(0.0, 0.0),  # base offset for background lines,
+            title="Acceleration vs Time",
         )
 
         acceleration_series = Graph.YSeries(
@@ -105,12 +105,11 @@ class Telemetry:
             graph=acceleration_graph, series=acceleration_series
         )
 
-    def tick(self):
-        current_time = time.time()
+    def tick(self, elapsed_time: float):
         car_velocity = self.car.velocity
 
         # Time logging
-        pop_and_push(self.time_series, current_time)
+        pop_and_push(self.time_series, elapsed_time)
 
         # Speed logging
         speed = np.linalg.norm(car_velocity)

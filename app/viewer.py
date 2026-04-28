@@ -48,7 +48,7 @@ class Viewer:
         dt = pyray.get_frame_time()
         dt = min(dt, 0.066667)  # prevent large timesteps
         self.scene.tick(dt)
-        self.telemetry.tick()
+        self.telemetry.tick(self.scene.elapsed_time)
 
     def _draw(self):
         pyray.begin_drawing()
