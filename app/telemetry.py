@@ -23,7 +23,7 @@ class Telemetry:
 
         self.car = car
 
-        velocity_graph: Graph = Graph(
+        speed_graph: Graph = Graph(
             position=(
                 SCREEN_WIDTH - GRAPH_WIDTH,
                 0,
@@ -36,19 +36,19 @@ class Telemetry:
         )
 
         # init y series
-        velocity_series = Graph.YSeries(
+        speed_series = Graph.YSeries(
             color=rl.RED,
             thickness=2,
             values=np.zeros(Telemetry.SAMPLES, np.float64),
         )
 
         current_time = time.time()
-        velocity_graph.x_series = np.linspace(
+        speed_graph.x_series = np.linspace(
             current_time - 1.0, current_time, Telemetry.SAMPLES
         )
 
-        velocity_graph.add_series(velocity_series)
-        self.velocity = TelemetryData(graph=velocity_graph, series=velocity_series)
+        speed_graph.add_series(speed_series)
+        self.speed = TelemetryData(graph=speed_graph, series=speed_series)
 
     def update_graph(self, scene: Scene):
         current_time = time.time()
@@ -56,15 +56,15 @@ class Telemetry:
         car_velocity = self.car.velocity
         car_speed = np.linalg.norm(car_velocity)
 
-        self.velocity.graph.x_series[:-1] = self.velocity.graph.x_series[1:]
-        self.velocity.graph.x_series[-1] = current_time
+        self.speed.graph.x_series[:-1] = self.speed.graph.x_series[1:]
+        self.speed.graph.x_series[-1] = current_time
 
-        self.velocity.series.values[:-1] = self.velocity.series.values[1:]
-        self.velocity.series.values[-1] = car_speed
+        self.speed.series.values[:-1] = self.speed.series.values[1:]
+        self.speed.series.values[-1] = car_speed
 
     def draw(self, scene):
 
         self.update_graph(scene)
-        self.velocity.graph.draw()
+        self.speed.graph.draw()
 
         return
