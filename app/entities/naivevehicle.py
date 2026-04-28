@@ -34,7 +34,9 @@ class NaiveVehicle(BaseEntity):
 
         # physics tracking
         self.velocity: np.typing.NDArray[np.float64] = np.array([0.0, 0.0], np.float64)
+        self.prev_velocity = np.array([0.0, 0.0], np.float64)
         self.angular_velocity: float = 0.0
+        self.tracked_acceleration = 0.0
         self.sliding: bool = False
 
         # parameters
@@ -69,6 +71,8 @@ class NaiveVehicle(BaseEntity):
 
         if handbraking:
             self.sliding = True
+
+        self.prev_velocity[:] = self.velocity[:]
 
         # add forward/backwards velocity
         if rl.is_key_down(KEY_W):
@@ -111,6 +115,10 @@ class NaiveVehicle(BaseEntity):
 
         self.rotation += self.angular_velocity * bundle.dt
         self.rotation %= np.pi * 2
+
+        # update tracked acceleration
+        delta_velocity = self.velocity - self.prev_velocity
+        self.tracked_acceleration = np.linalg.norm(delta_velocity) / bundle.dt
 
     def _get_forward_vector(self):
         return np.array([np.cos(self.rotation), np.sin(self.rotation)], np.float64)
