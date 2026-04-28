@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import time
 
 import numpy as np
 import pyray as rl
