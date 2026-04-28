@@ -21,19 +21,16 @@ class BaseEntity:
     Can define per-tick logic, drawing, and can report when self-deletion should occur.
     """
 
-    position: np.typing.NDArray[np.float64]
-    "`[x, y]` - World position"
-    rotation: float
-    "Rotation, in radians"
-
     def __init__(
         self,
         *,
         pos: tuple[float, float] = (0, 0),
         rotation: float = 0,
     ):
-        self.position = np.array(pos, float)
-        self.rotation = rotation
+        self.position: np.typing.NDArray[np.float64] = np.array(pos, float)
+        "`[x, y]` - World position"
+        self.rotation: float = rotation
+        "Rotation, in radians"
 
     def tick(self, bundle: EntityTickBundle) -> None:
         pass

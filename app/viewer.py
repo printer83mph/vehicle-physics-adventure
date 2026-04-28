@@ -7,11 +7,7 @@ from app.telemetry import Telemetry
 
 
 class Viewer:
-    scene: Scene
-    telemetry: Telemetry
-    camera: pyray.Camera2D = pyray.Camera2D()
-
-    def __init__(self):
+    def __init__(self, scene: Scene):
         SCREEN_WIDTH = 800
         SCREEN_HEIGHT = 600
 
@@ -34,8 +30,9 @@ class Viewer:
             ],
         )
 
-        self.scene = Scene()
+        self.scene: Scene = scene
         self.scene.entities.append(car)
+        self.camera: pyray.Camera2D = pyray.Camera2D()
         self.camera.target = pyray.Vector2(20, 20)
         self.camera.offset = pyray.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
         self.camera.rotation = 0.0

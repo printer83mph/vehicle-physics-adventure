@@ -23,36 +23,35 @@ class NaiveVehicle(BaseEntity):
         )
         turns: bool = False
 
-    size: np.typing.NDArray[np.float64]
-
-    turn_amount: float = 0.0
-    "within [-1, 1]"
-
-    velocity: np.typing.NDArray[np.float64] = np.array([0.0, 0.0], np.float64)
-    angular_velocity: float = 0.0
-
-    damping: float = 0.9
-    brake_damping: float = 0.25
-    angular_damping: float = 0.6
-
-    turn_speed = 2.0
-    acceleration = 150
-    turn_ratio = 0.012
-
-    wheels: list[Wheel]
-
-    sliding: bool = False
-    body: rl.Rectangle
-
     def __init__(self, *, size: tuple[float, float], wheels: Iterable[Wheel]):
         super().__init__()
-        self.size = np.array(size, np.float64)
-        self.wheels = list(wheels)
+
+        self.size: np.typing.NDArray[np.float64] = np.array(size, np.float64)
+        self.wheels: list[NaiveVehicle.Wheel] = list(wheels)
+
+        self.turn_amount: float = 0.0
+        "how far left or right the car is steering, within [-1, 1]"
+
+        # physics tracking
+        self.velocity: np.typing.NDArray[np.float64] = np.array([0.0, 0.0], np.float64)
+        self.angular_velocity: float = 0.0
+        self.sliding: bool = False
+
+        # parameters
+        self.damping: float = 0.9
+        self.brake_damping: float = 0.25
+        self.angular_damping: float = 0.6
+        self.turn_speed = 2.0
+        self.acceleration = 150
+        self.turn_ratio = 0.012
 
         # rendering
         self.body = rl.Rectangle(
             -self.size[0] / 2, -self.size[1] / 2, self.size[0], self.size[1]
         )
+
+        self._steer_line_start_pos = rl.Vector2()
+        self._steer_line_end_pos = rl.Vector2()
 
     @override
     def tick(self, bundle: EntityTickBundle) -> None:
@@ -119,9 +118,6 @@ class NaiveVehicle(BaseEntity):
     def _get_steering_forward_vector(self):
         rotation = self.rotation + self.turn_amount * np.pi / 8
         return np.array([np.cos(rotation), np.sin(rotation)], np.float64)
-
-    _steer_line_start_pos = rl.Vector2()
-    _steer_line_end_pos = rl.Vector2()
 
     @override
     def draw(self) -> None:

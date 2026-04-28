@@ -3,11 +3,9 @@ from app.entities.naivevehicle import NaiveVehicle
 
 
 class Scene:
-    entities: list[BaseEntity] = []
-    elapsed_time: float = 0
-
     def __init__(self):
-        return
+        self.entities: list[BaseEntity] = []
+        self.elapsed_time: float = 0
 
     def tick(self, dt: float):
         # Bundle of scene/tick info to send to all entities
