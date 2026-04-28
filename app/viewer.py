@@ -34,6 +34,7 @@ class Viewer:
 
         pyray.begin_mode_2d(self.camera)
         self.scene.draw()
+        pyray.end_mode_2d()
 
         pyray.end_drawing()
 
