@@ -6,7 +6,7 @@ created by Thomas Shaw and Anthony Ge
 
 Check out our demo video for a quick overview of the project!
 
-[![Demo Thumbnail](docs/img/demo_thumbnail.jpg)](https://www.youtube.com/watch?v=CnXWVtKBUeI)
+[![Demo Thumbnail](docs/img/demo_thumbnail.webp)](https://www.youtube.com/watch?v=CnXWVtKBUeI)
 
 ## Usage
 
