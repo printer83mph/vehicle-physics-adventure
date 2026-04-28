@@ -3,8 +3,7 @@ from app.viewer import Viewer
 
 
 def main():
-    scene = Scene()
-    viewer = Viewer(scene)
+    viewer = Viewer()
 
     viewer.run()
 

@@ -1,14 +1,17 @@
 import pyray
 from pyray import RAYWHITE
 
+from app.entities.naivevehicle import NaiveVehicle
 from app.scene import Scene
+from app.telemetry import Telemetry
 
 
 class Viewer:
     scene: Scene
+    telemetry: Telemetry
     camera: pyray.Camera2D = pyray.Camera2D()
 
-    def __init__(self, scene: Scene):
+    def __init__(self):
         SCREEN_WIDTH = 800
         SCREEN_HEIGHT = 600
 
@@ -17,11 +20,32 @@ class Viewer:
             pyray.get_monitor_refresh_rate(pyray.get_current_monitor())
         )
 
-        self.scene = scene
+        car = NaiveVehicle(
+            size=(40, 20),
+            wheels=[
+                NaiveVehicle.Wheel(
+                    position=(15, 10), acceleration_factor=0.0, turns=True
+                ),
+                NaiveVehicle.Wheel(
+                    position=(15, -10), acceleration_factor=0.0, turns=True
+                ),
+                NaiveVehicle.Wheel(position=(-15, 10), acceleration_factor=1.0),
+                NaiveVehicle.Wheel(position=(-15, -10), acceleration_factor=1.0),
+            ],
+        )
+
+        self.scene = Scene()
+        self.scene.entities.append(car)
         self.camera.target = pyray.Vector2(20, 20)
         self.camera.offset = pyray.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
         self.camera.rotation = 0.0
         self.camera.zoom = 1.0
+
+        self.telemetry = Telemetry(
+            car=car,
+            SCREEN_WIDTH=SCREEN_WIDTH,
+            SCREEN_HEIGHT=SCREEN_HEIGHT,
+        )
 
     def _tick(self):
         dt = pyray.get_frame_time()
@@ -35,6 +59,8 @@ class Viewer:
         pyray.begin_mode_2d(self.camera)
         self.scene.draw()
         pyray.end_mode_2d()
+
+        self.telemetry.draw(self.scene)
 
         pyray.end_drawing()
 
