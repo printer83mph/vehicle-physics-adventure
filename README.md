@@ -2,9 +2,13 @@
 
 created by Thomas Shaw and Anthony Ge
 
-## Usage
+## Demo video
 
-**TODO: scene file loading**
+Check out our demo video for a quick overview of the project!
+
+[![Demo Thumbnail](docs/img/demo_thumbnail.webp)](https://www.youtube.com/watch?v=CnXWVtKBUeI)
+
+## Usage
 
 Run:
 
