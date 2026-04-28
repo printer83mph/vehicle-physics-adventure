@@ -15,12 +15,7 @@ class TelemetryData:
 
 
 class Telemetry:
-    # For now, we'll just separate stuff into data like this
-    velocity: TelemetryData
-
-    car: NaiveVehicle
-
-    MAX_SERIES_LENGTH = 100
+    SAMPLES = 100
 
     def __init__(self, car, SCREEN_WIDTH, SCREEN_HEIGHT):
         GRAPH_WIDTH = 200
@@ -34,9 +29,9 @@ class Telemetry:
                 0,
             ),  # position of top left corner
             size=(200, 200),
-            y_min=-2.0,  # min y value shown
-            y_max=2.0,  # max y value shown
-            line_spacing=(1.0, 1.0),  # space between each background line
+            y_min=0.0,  # min y value shown
+            y_max=500.0,  # max y value shown
+            line_spacing=(1.0, 100.0),  # space between each background line
             line_offset=(0.0, 0.0),  # base offset for background lines
         )
 
@@ -44,10 +39,13 @@ class Telemetry:
         velocity_series = Graph.YSeries(
             color=rl.RED,
             thickness=2,
-            values=np.zeros(self.MAX_SERIES_LENGTH, np.float64),
+            values=np.zeros(Telemetry.SAMPLES, np.float64),
         )
 
-        velocity_graph.x_series = np.zeros(self.MAX_SERIES_LENGTH, np.float64)
+        current_time = time.time()
+        velocity_graph.x_series = np.linspace(
+            current_time - 1.0, current_time, Telemetry.SAMPLES
+        )
 
         velocity_graph.add_series(velocity_series)
         self.velocity = TelemetryData(graph=velocity_graph, series=velocity_series)
@@ -56,15 +54,13 @@ class Telemetry:
         current_time = time.time()
 
         car_velocity = self.car.velocity
-        car_speed = np.linalg.norm(car_velocity[0], car_velocity[1])
+        car_speed = np.linalg.norm(car_velocity)
 
         self.velocity.graph.x_series[:-1] = self.velocity.graph.x_series[1:]
         self.velocity.graph.x_series[-1] = current_time
 
         self.velocity.series.values[:-1] = self.velocity.series.values[1:]
         self.velocity.series.values[-1] = car_speed
-
-        return True
 
     def draw(self, scene):
 

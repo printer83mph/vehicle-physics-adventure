@@ -1,4 +1,3 @@
-from app.scene import Scene
 from app.viewer import Viewer
 
 
