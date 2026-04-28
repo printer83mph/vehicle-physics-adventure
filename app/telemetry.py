@@ -50,7 +50,7 @@ class Telemetry:
         speed_graph.add_series(speed_series)
         self.speed = TelemetryData(graph=speed_graph, series=speed_series)
 
-    def update_graph(self, scene: Scene):
+    def update_graph(self):
         current_time = time.time()
 
         car_velocity = self.car.velocity
@@ -62,9 +62,9 @@ class Telemetry:
         self.speed.series.values[:-1] = self.speed.series.values[1:]
         self.speed.series.values[-1] = car_speed
 
-    def draw(self, scene):
+    def draw(self):
 
-        self.update_graph(scene)
+        self.update_graph()
         self.speed.graph.draw()
 
         return

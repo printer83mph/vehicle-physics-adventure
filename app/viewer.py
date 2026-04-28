@@ -57,7 +57,7 @@ class Viewer:
         self.scene.draw()
         pyray.end_mode_2d()
 
-        self.telemetry.draw(self.scene)
+        self.telemetry.draw()
 
         pyray.end_drawing()
 
