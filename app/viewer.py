@@ -5,9 +5,6 @@ from app.scene import Scene
 
 
 class Viewer:
-    scene: Scene
-    camera: pyray.Camera2D = pyray.Camera2D()
-
     def __init__(self, scene: Scene):
         SCREEN_WIDTH = 800
         SCREEN_HEIGHT = 600
@@ -17,7 +14,8 @@ class Viewer:
             pyray.get_monitor_refresh_rate(pyray.get_current_monitor())
         )
 
-        self.scene = scene
+        self.scene: Scene = scene
+        self.camera: pyray.Camera2D = pyray.Camera2D()
         self.camera.target = pyray.Vector2(20, 20)
         self.camera.offset = pyray.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
         self.camera.rotation = 0.0
