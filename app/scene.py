@@ -1,24 +1,9 @@
 from app.entities.base import BaseEntity, EntityTickBundle
-from app.entities.naivevehicle import NaiveVehicle
 
 
 class Scene:
     def __init__(self):
-        self.entities: list[BaseEntity] = [
-            NaiveVehicle(
-                size=(40, 20),
-                wheels=[
-                    NaiveVehicle.Wheel(
-                        position=(15, 10), acceleration_factor=0.0, turns=True
-                    ),
-                    NaiveVehicle.Wheel(
-                        position=(15, -10), acceleration_factor=0.0, turns=True
-                    ),
-                    NaiveVehicle.Wheel(position=(-15, 10), acceleration_factor=1.0),
-                    NaiveVehicle.Wheel(position=(-15, -10), acceleration_factor=1.0),
-                ],
-            )
-        ]
+        self.entities: list[BaseEntity] = []
         self.elapsed_time: float = 0
 
     def tick(self, dt: float):

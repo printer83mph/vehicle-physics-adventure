@@ -26,6 +26,8 @@ class Graph:
         background_color: tuple[int, int, int, int] | None = WHITE,
         line_color: tuple[int, int, int, int] | None = LIGHTGRAY,
         border_color: tuple[int, int, int, int] | None = LIGHTGRAY,
+        title: str | None = None,
+        x_steps: int = 100,
     ):
         self.position: tuple[int, int] = position
         self.size: tuple[int, int] = size
@@ -36,6 +38,8 @@ class Graph:
         self.background_color = background_color
         self.line_color = line_color
         self.border_color = border_color
+        self.title = title
+        self.x_steps = x_steps
 
         self.x_series: NDArray[np.float64] = np.array([], np.float64)
         self.y_series_list: list[Graph.YSeries] = []
@@ -86,6 +90,7 @@ class Graph:
             while x_line < x_max:
                 line_pos = int((x_line - x_min) * inv_rl_x_scale * x_size)
                 rl.draw_line(line_pos, 0, line_pos, y_size, self.line_color)
+                rl.draw_text(str(x_line), line_pos, self.size[1] - 10, 10, rl.BLACK)
                 x_line += self.line_spacing[0]
 
             # draw vertical (y=k) lines
@@ -100,7 +105,12 @@ class Graph:
             while y_line < self.y_max:
                 line_pos = int((1 - (y_line - self.y_min) * inv_rl_y_scale) * y_size)
                 rl.draw_line(0, line_pos, x_size, line_pos, self.line_color)
+                rl.draw_text(str(y_line), 0, line_pos, 10, rl.BLACK)
                 y_line += self.line_spacing[1]
+
+        # title render
+        if self.title is not None:
+            rl.draw_text(self.title, 0, 0, 11, rl.BLACK)
 
         # draw data series
         for i in range(len(self.x_series) - 1):
