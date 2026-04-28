@@ -1,5 +1,4 @@
 from app.entities.base import BaseEntity, EntityTickBundle
-from app.entities.naivevehicle import NaiveVehicle
 
 
 class Scene:

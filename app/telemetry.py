@@ -3,8 +3,6 @@ import time
 
 import numpy as np
 import pyray as rl
-from app.entities.naivevehicle import NaiveVehicle
-from app.scene import Scene
 from app.ui.graph import Graph
 
 
@@ -20,7 +18,7 @@ def pop_and_push(arr, value):
 
 
 class Telemetry:
-    SAMPLES = 100
+    SAMPLES = 200
 
     def __init__(self, car, SCREEN_WIDTH, SCREEN_HEIGHT):
         GRAPH_WIDTH = 200
