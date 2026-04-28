@@ -26,7 +26,7 @@ class Graph:
         background_color: tuple[int, int, int, int] | None = WHITE,
         line_color: tuple[int, int, int, int] | None = LIGHTGRAY,
         border_color: tuple[int, int, int, int] | None = LIGHTGRAY,
-        title: str,
+        title: str | None = None,
         x_steps: int = 100,
     ):
         self.position: tuple[int, int] = position
@@ -109,7 +109,8 @@ class Graph:
                 y_line += self.line_spacing[1]
 
         # title render
-        rl.draw_text(self.title, 0, 0, 11, rl.BLACK)
+        if self.title is not None:
+            rl.draw_text(self.title, 0, 0, 11, rl.BLACK)
 
         # draw data series
         for i in range(len(self.x_series) - 1):
