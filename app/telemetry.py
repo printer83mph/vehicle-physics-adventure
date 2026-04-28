@@ -20,8 +20,8 @@ class Telemetry:
     SAMPLES = 400
 
     def __init__(self, car, SCREEN_WIDTH, SCREEN_HEIGHT):
-        GRAPH_WIDTH = 200
-        GRAPH_HEIGHT = 200
+        GRAPH_WIDTH = 300
+        GRAPH_HEIGHT = 240
 
         self.car = car
 
@@ -33,7 +33,7 @@ class Telemetry:
                 SCREEN_WIDTH - GRAPH_WIDTH,
                 0,
             ),  # position of top left corner
-            size=(400, 200),
+            size=(GRAPH_WIDTH, GRAPH_HEIGHT),
             y_min=-100.0,  # min y value shown
             y_max=500.0,  # max y value shown
             line_spacing=(1.0, 100.0),  # space between each background line
@@ -58,7 +58,7 @@ class Telemetry:
                 SCREEN_WIDTH - GRAPH_WIDTH,
                 GRAPH_HEIGHT,
             ),  # position of top left corner
-            size=(400, 200),
+            size=(GRAPH_WIDTH, GRAPH_HEIGHT),
             y_min=-5.0,  # min y value shown
             y_max=5.0,  # max y value shown
             line_spacing=(1.0, 1.0),  # space between each background line
@@ -84,7 +84,7 @@ class Telemetry:
                 SCREEN_WIDTH - GRAPH_WIDTH,
                 2 * GRAPH_HEIGHT,
             ),  # position of top left corner
-            size=(400, 200),
+            size=(GRAPH_WIDTH, GRAPH_HEIGHT),
             y_min=-400.0,  # min y value shown
             y_max=1600.0,  # max y value shown
             line_spacing=(1.0, 400.0),  # space between each background line

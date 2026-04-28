@@ -8,8 +8,8 @@ from app.telemetry import Telemetry
 
 class Viewer:
     def __init__(self):
-        SCREEN_WIDTH = 800
-        SCREEN_HEIGHT = 600
+        SCREEN_WIDTH = 1080
+        SCREEN_HEIGHT = 720
 
         pyray.init_window(SCREEN_WIDTH, SCREEN_HEIGHT, "awesome vehicle simulator")
         pyray.set_target_fps(
